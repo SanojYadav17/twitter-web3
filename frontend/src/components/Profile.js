@@ -30,7 +30,7 @@ function parseTweetContent(content) {
   return { text: cleanText, images: allImages };
 }
 
-function Profile({ contract, account, profiles, onSaveProfile }) {
+function Profile({ contract, account, profiles, onSaveProfile, deleteTweet }) {
   const [followingCount, setFollowingCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
   const [followers, setFollowers] = useState([]);
@@ -108,6 +108,18 @@ function Profile({ contract, account, profiles, onSaveProfile }) {
     try {
       const tx = await contract.unfollow(addr);
       await tx.wait();
+      await loadProfile();
+    } catch (err) {
+      setError(err.reason || err.message);
+    }
+    setActing(false);
+  };
+
+  const handleDeleteTweet = async (id) => {
+    if (!window.confirm("Delete this tweet permanently?")) return;
+    setActing(true);
+    try {
+      await deleteTweet(id);
       await loadProfile();
     } catch (err) {
       setError(err.reason || err.message);
@@ -306,6 +318,17 @@ function Profile({ contract, account, profiles, onSaveProfile }) {
                     <span className="tweet-time">
                       {new Date(t.createdAt * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
+                    <button
+                      className="tweet-menu-btn"
+                      onClick={() => handleDeleteTweet(t.id)}
+                      disabled={acting}
+                      title="Delete tweet"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
                   </div>
                   {(() => {
                     const { text, images } = parseTweetContent(t.content);

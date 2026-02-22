@@ -405,6 +405,7 @@ function App() {
               account={account}
               profiles={profiles}
               onSaveProfile={handleSaveProfile}
+              deleteTweet={deleteTweet}
             />
           )}
           {activeTab === "messages" && <Messages contract={contract} account={account} />}
