@@ -49,9 +49,12 @@ function CreateTweet({ postTweet, account, profiles }) {
 
   const [uploading, setUploading] = useState(false);
 
-  const totalLen = content.length;
-  const pct = (totalLen / maxLen) * 100;
-  const remaining = maxLen - totalLen;
+  // Count UTF-8 bytes (same as Solidity's bytes().length)
+  const byteLen = new TextEncoder().encode(content).length;
+  const imgRefEstimate = imageData ? 50 : 0; // ~50 bytes for "\n[IMG]cloud:tweeter/tweets/xxxxx.jpg"
+  const totalBytes = byteLen + imgRefEstimate;
+  const pct = (totalBytes / maxLen) * 100;
+  const remaining = maxLen - totalBytes;
 
   const handleFile = async (file) => {
     if (!file || !file.type.startsWith("image/")) {
@@ -113,9 +116,14 @@ function CreateTweet({ postTweet, account, profiles }) {
       let finalContent = content;
       if (imageData) {
         setUploading(true);
-        const imageUrl = await uploadImage(imageData.base64, "tweets");
+        const shortRef = await uploadImage(imageData.base64, "tweets");
         setUploading(false);
-        finalContent = content + "\n[IMG]" + imageUrl;
+        finalContent = content + "\n[IMG]" + shortRef;
+      }
+      // Check actual byte length before sending to contract
+      const finalBytes = new TextEncoder().encode(finalContent).length;
+      if (finalBytes > maxLen) {
+        throw new Error(`Tweet is ${finalBytes} bytes (max ${maxLen}). Shorten your text or remove the image.`);
       }
       await postTweet(finalContent);
       setContent("");

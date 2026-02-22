@@ -2,12 +2,11 @@
 const CLOUD_NAME = "dluhpsxfi";
 const UPLOAD_PRESET = "tweeter_uploads";
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
 
 /**
  * Upload a base64 image to Cloudinary
- * @param {string} base64Data - The base64 encoded image string
- * @param {string} folder - Optional subfolder (e.g. 'profiles', 'tweets')
- * @returns {Promise<string>} - The uploaded image URL
+ * Returns a short reference (cloud:public_id.format) to save on-chain bytes
  */
 export async function uploadImage(base64Data, folder = "") {
   const formData = new FormData();
@@ -28,7 +27,18 @@ export async function uploadImage(base64Data, folder = "") {
   }
 
   const data = await response.json();
-  return data.secure_url;
+  // Return short ref to save on-chain space (e.g. "cloud:tweeter/tweets/abc123.jpg")
+  return `cloud:${data.public_id}.${data.format}`;
+}
+
+/**
+ * Resolve a cloud: short reference to a full Cloudinary URL
+ */
+export function resolveCloudinaryRef(ref) {
+  if (ref && ref.startsWith("cloud:")) {
+    return CLOUDINARY_BASE + ref.substring(6);
+  }
+  return null;
 }
 
 /**

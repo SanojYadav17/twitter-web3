@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getProfile, getDisplayName, getProfilePic, shortAddr as shortAddress } from "../helpers/profile";
 import EditProfile from "./EditProfile";
+import { resolveCloudinaryRef } from "../helpers/cloudinary";
 
 function resolveImageUrl(url) {
+  if (url.startsWith("cloud:")) return resolveCloudinaryRef(url);
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   if (url.startsWith("local:")) {
     const id = url.substring(6);

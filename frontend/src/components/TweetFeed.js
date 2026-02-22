@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { getDisplayName, getProfilePic } from "../helpers/profile";
+import { resolveCloudinaryRef } from "../helpers/cloudinary";
 
 function resolveImageUrl(url) {
-  // Cloudinary URLs - return as-is
+  // Cloudinary short references (cloud:public_id.format)
+  if (url.startsWith("cloud:")) {
+    return resolveCloudinaryRef(url);
+  }
+  // Full URLs (legacy Cloudinary or any http) - return as-is
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
