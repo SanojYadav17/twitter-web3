@@ -110,7 +110,7 @@ tweeter-project/
 ### 1. Clone & Install
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/SanojYadav17/twitter-web3.git>
 cd tweeter-project
 
 # Install Hardhat dependencies
