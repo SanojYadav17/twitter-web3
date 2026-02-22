@@ -1,101 +1,110 @@
 # 🐦 Tweeter — Decentralized Social Media on Ethereum
 
-A fully on-chain Twitter/X clone built on the **Holesky Testnet**. Every tweet, like, follow, and message is stored immutably on the Ethereum blockchain. No servers, no censorship — just your wallet and the smart contract.
+A fully decentralized, Twitter/X-inspired social media platform built on the **Ethereum Holesky Testnet**.
+Every tweet, like, follow, and message is powered by smart contracts — no centralized backend, no censorship, and true user ownership.
+
+🚀 **Live Demo:** [https://tweeter-dapp.vercel.app](https://tweeter-dapp.vercel.app)
+
+💻 **GitHub:** [https://github.com/SanojYadav17/twitter-web3](https://github.com/SanojYadav17/twitter-web3)
 
 ---
 
-## ✨ Features
+## ✨ Overview
 
-### Core Social Features
-- **Tweet** — Post up to 280-byte tweets on-chain
+Tweeter demonstrates how a modern social media experience can be built using **Solidity smart contracts** and a **React-based Web3 frontend** without relying on a traditional backend.
+
+The platform focuses on:
+
+- Decentralization and transparency
+- Wallet-based identity
+- On-chain social interactions
+- A clean, production-ready user experience
+
+---
+
+## 🌟 Key Features
+
+### 🧵 Core Social Features
+
+- **Tweet** — Post tweets on-chain
 - **Like / Unlike** — Like any tweet (one per wallet per tweet)
-- **Delete** — Remove your own tweets permanently
+- **Delete** — Remove your own tweets
 - **Follow / Unfollow** — Follow any wallet address
-- **Direct Messages** — Send on-chain messages to any wallet (up to 1000 bytes)
-- **Share** — Forward any tweet to another wallet via DM
+- **Direct Messages** — Wallet-to-wallet on-chain messaging
+- **Share** — Forward tweets via direct message
 
-### Profile System
-- Custom display name, bio, location
-- Profile picture and cover photo with built-in **Image Editor**
-- All profile data stored locally per wallet address (`localStorage`)
+### 👤 Profile System
 
-### Image Editor
-- **Crop** — Free, 1:1, 4:3, 16:9, 3:4 aspect ratios with draggable handles
-- **Adjust** — Brightness, contrast, saturation, warmth, blur sliders
-- **Filters** — 9 presets (Vivid, Warm, Cool, B&W, Vintage, Dramatic, Fade, Noir)
+- Custom display name, bio, and location
+- Profile picture and cover photo with built-in Image Editor
+- Profile data stored locally per wallet address using `localStorage`
+
+### 🖼️ Built-in Image Editor
+
+- **Crop** — 1:1, 4:3, 16:9, 3:4
+- **Adjust** — Brightness, contrast, saturation, warmth, blur
+- **Filters** — Vivid, Warm, Cool, B&W, Vintage, Dramatic, Fade, Noir
 - **Transform** — Rotate (90° increments), flip horizontal/vertical
 
-### AI-Powered Tweet Composer
-13 AI enhancement options in 4 categories:
+### 🤖 AI-Powered Tweet Composer
 
-| Category | Options |
-|----------|---------|
-| **Style** | ✨ Enhance, 💼 Professional, 😎 Casual, 💪 Motivational, 📖 Storytelling |
-| **Tools** | 📝 Fix Grammar, 📏 Shorten, #️⃣ Hashtags, 🎨 Emoji Boost |
-| **Engage** | 🎣 Add Hook, 📢 Add CTA, 🧵 Thread Format |
-| **Translate** | 🇮🇳 Hinglish (English → Hindi-English mix) |
+Multiple AI enhancement options across categories:
 
-Plus a **Generate** feature that creates new tweets by topic (Web3, Tech, Motivation, General).
+- **Style** — Enhance, Professional, Casual, Motivational, Storytelling
+- **Tools** — Fix Grammar, Shorten, Hashtags, Emoji Boost
+- **Engage** — Add Hook, Add CTA, Thread Format
+- **Translate** — Hinglish (English → Hindi-English mix)
 
-### Image Upload
-- Drag & drop or click to upload (JPG, PNG, GIF, WEBP — max 5MB)
-- Auto-compression to save space
-- Images stored in `localStorage` with short IDs, referenced on-chain as `local:xxxxxxxx`
+Also includes a **Generate** feature to create tweets by topic (Web3, Tech, Motivation, General).
 
-### Real-time UI
-- Notification system (follows + likes) with read/unread states
-- Dynamic trending sidebar (extracts hashtags & keywords from live tweets)
-- Network stats (tweet count, user count, total likes)
-- Character counter with circular progress ring
+### 🖼️ Image Upload
+
+- Upload images (JPG, PNG, GIF, WEBP)
+- Images are stored on **Cloudinary** for scalable and optimized delivery
+- Media is integrated into the dApp for posts and profiles
+
+### ⚡ Real-time UI
+
+- Notification system for likes and follows
+- Dynamic trending sidebar
+- Network statistics (tweets, users, likes)
+- Character counter with progress indicator
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Smart Contract** | Solidity 0.8.20 |
-| **Blockchain** | Holesky Testnet (Chain ID: 17000) |
-| **Development** | Hardhat 2.22.0 |
-| **Frontend** | React 19.2.4 |
-| **Blockchain Lib** | ethers.js 6.16.0 |
-| **Wallet** | MetaMask |
+|---|---|
+| Blockchain | Ethereum Holesky Testnet (Chain ID: 17000) |
+| Smart Contracts | Solidity |
+| Development | Hardhat |
+| Frontend | React |
+| Blockchain Library | Ethers.js |
+| Wallet | MetaMask |
+| Image Storage | Cloudinary |
+| Deployment | Vercel |
 
 ---
 
 ## 📦 Project Structure
 
 ```
-tweeter-project/
+twitter-web3/
 ├── contracts/
-│   └── tweeter.sol              # Smart contract (TweetContract)
+│   └── tweeter.sol
 ├── scripts/
-│   └── deploy.js                # Hardhat deployment script
+│   └── deploy.js
 ├── frontend/
 │   ├── public/
-│   │   ├── index.html           # HTML template
-│   │   └── logo.png             # App logo
 │   └── src/
-│       ├── index.js             # React entry point
-│       ├── App.js               # Main component (wallet connect, routing, state)
-│       ├── App.css              # All styles (dark theme, 3-column layout)
-│       ├── contract.js          # Contract address + ABI
+│       ├── components/
 │       ├── helpers/
-│       │   ├── profile.js       # Profile CRUD (localStorage)
-│       │   └── ai.js            # 13 AI options + content generator
-│       └── components/
-│           ├── Navbar.js        # Left sidebar navigation
-│           ├── CreateTweet.js   # Tweet composer + image upload + AI tools
-│           ├── TweetFeed.js     # Tweet cards with like/delete/share
-│           ├── Profile.js       # Profile page (stats, tweets, followers)
-│           ├── EditProfile.js   # Profile edit modal
-│           ├── Messages.js      # On-chain messaging
-│           ├── Notifications.js # Follow & like notifications
-│           ├── RightSidebar.js  # Trending, network stats, about
-│           └── ImageEditor.js   # Crop, adjust, filter, transform
-├── hardhat.config.js            # Hardhat configuration
-├── package.json                 # Root dependencies (Hardhat)
-└── .env                         # Private key & RPC URL (not committed)
+│       ├── App.js
+│       └── index.js
+├── hardhat.config.js
+├── package.json
+└── .env
 ```
 
 ---
@@ -103,20 +112,18 @@ tweeter-project/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-- [MetaMask](https://metamask.io/) browser extension
-- Holesky testnet ETH (free from [faucets](https://holesky-faucet.pk910.de/))
+
+- Node.js (v18+)
+- MetaMask browser extension
+- Holesky testnet ETH (from a faucet)
 
 ### 1. Clone & Install
 
 ```bash
-git clone <https://github.com/SanojYadav17/twitter-web3.git>
-cd tweeter-project
+git clone https://github.com/SanojYadav17/twitter-web3.git
+cd twitter-web3
 
-# Install Hardhat dependencies
 npm install
-
-# Install frontend dependencies
 cd frontend
 npm install
 ```
@@ -125,12 +132,12 @@ npm install
 
 Create a `.env` file in the project root:
 
-```env
+```
 SEPOLIA_RPC_URL=https://holesky.drpc.org
 PRIVATE_KEY=your_wallet_private_key_here
 ```
 
-### 3. Deploy Smart Contract (optional — already deployed)
+### 3. Deploy Smart Contract (Optional)
 
 The contract is already deployed at:
 
@@ -153,26 +160,23 @@ cd frontend
 npm start
 ```
 
-The app opens at **http://localhost:3000** (or next available port).
+Open: [http://localhost:3000](http://localhost:3000)
 
 ---
 
 ## 🔗 Smart Contract
 
-**Address:** `0x27fB721aB9B385D9E3b8Df13acbB8c949b7DdA87`  
-**Network:** Holesky Testnet  
-**Explorer:** [View on Etherscan](https://holesky.etherscan.io/address/0x27fB721aB9B385D9E3b8Df13acbB8c949b7DdA87)
+- **Network:** Holesky Testnet
+- **Address:** `0x27fB721aB9B385D9E3b8Df13acbB8c949b7DdA87`
 
-### Contract Functions
+### Main Functions
 
 | Function | Description |
-|----------|------------|
+|---|---|
 | `tweet(string)` | Post a new tweet |
 | `deleteTweet(uint)` | Delete your own tweet |
-| `likeTweet(uint)` | Like a tweet |
-| `unlikeTweet(uint)` | Unlike a tweet |
-| `follow(address)` | Follow a wallet |
-| `unfollow(address)` | Unfollow a wallet |
+| `likeTweet(uint)` / `unlikeTweet(uint)` | Like or unlike a tweet |
+| `follow(address)` / `unfollow(address)` | Follow or unfollow a wallet |
 | `sendMessage(string, address)` | Send a direct message |
 | `allow(address)` / `disallow(address)` | Operator delegation |
 | `getLatestTweets(uint)` | Fetch recent tweets |
@@ -180,22 +184,22 @@ The app opens at **http://localhost:3000** (or next available port).
 
 ---
 
-## 🎨 Design
+## 🎨 UI & Design
 
-- **Dark theme** with CSS variables for easy customization
-- **3-column layout** — Left sidebar (275px) · Main content (600px) · Right sidebar (350px)
-- **Responsive** — Breakpoints at 1280px, 1024px, 768px, and 500px
-- **Connect page** — Split layout with animated hero (floating orbs, gradient text, badges) on the left, features + connect button on the right
+- Dark theme with modern layout
+- 3-column layout (Sidebar · Feed · Right panel)
+- Fully responsive across devices
+- Dedicated connect page with animated hero section
 
 ---
 
 ## 📝 Notes
 
-- **No backend server** — All data is on-chain or in browser `localStorage`
-- **Images are stored locally** — They are compressed and saved in `localStorage`, not uploaded to IPFS or any server. Images only persist on the device where they were uploaded.
-- **Profile data is local** — Stored per wallet address in `localStorage`. Not visible to other users on different devices.
-- **Zero transaction cost** — Holesky is a testnet with free ETH from faucets.
-- **MetaMask required** — The app auto-switches to Holesky network on connect.
+- No traditional backend server
+- On-chain data + browser `localStorage` for profile metadata
+- Images are stored on Cloudinary
+- Holesky testnet = no real gas cost
+- MetaMask is required
 
 ---
 
