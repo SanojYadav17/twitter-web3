@@ -2,6 +2,34 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getProfile, getDisplayName, getProfilePic, shortAddr as shortAddress } from "../helpers/profile";
 import EditProfile from "./EditProfile";
 
+function resolveImageUrl(url) {
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("local:")) {
+    const id = url.substring(6);
+    try {
+      const store = JSON.parse(localStorage.getItem("tweeter-images") || "{}");
+      return store[id] || null;
+    } catch (e) { return null; }
+  }
+  return url;
+}
+
+function parseTweetContent(content) {
+  const imgSplit = content.split("\n[IMG]");
+  const text = imgSplit[0] || "";
+  const imageRef = imgSplit[1] || "";
+  const urlRegex = /(https?:\/\/[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg)(?:\?[^\s]*)?)/gi;
+  const inlineImages = text.match(urlRegex) || [];
+  const cleanText = inlineImages.length > 0 ? text.replace(urlRegex, '').trim() : text;
+  const allImages = [];
+  if (imageRef) {
+    const resolved = resolveImageUrl(imageRef);
+    if (resolved) allImages.push(resolved);
+  }
+  inlineImages.forEach(u => allImages.push(u));
+  return { text: cleanText, images: allImages };
+}
+
 function Profile({ contract, account, profiles, onSaveProfile }) {
   const [followingCount, setFollowingCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
@@ -279,7 +307,21 @@ function Profile({ contract, account, profiles, onSaveProfile }) {
                       {new Date(t.createdAt * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
                   </div>
-                  <p className="tweet-content">{t.content}</p>
+                  {(() => {
+                    const { text, images } = parseTweetContent(t.content);
+                    return (
+                      <>
+                        <p className="tweet-content">{text}</p>
+                        {images.length > 0 && (
+                          <div className="tweet-images">
+                            {images.map((url, idx) => (
+                              <img key={idx} src={url} alt="" className="tweet-image" onError={(e) => { e.target.style.display = 'none'; }} />
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   <div className="tweet-meta">
                     <span className="meta-item">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">

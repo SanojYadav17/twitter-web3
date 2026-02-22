@@ -3,6 +3,11 @@ import { ethers } from "ethers";
 import { getDisplayName, getProfilePic } from "../helpers/profile";
 
 function resolveImageUrl(url) {
+  // Cloudinary URLs - return as-is
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  // Legacy localStorage support for old tweets
   if (url.startsWith("local:")) {
     const id = url.substring(6);
     try {

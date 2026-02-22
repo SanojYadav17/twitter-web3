@@ -1,33 +1,8 @@
 import React, { useState, useRef } from "react";
 import { getProfilePic } from "../helpers/profile";
 import { AI_OPTIONS, generateContent } from "../helpers/ai";
+import { uploadImage } from "../helpers/cloudinary";
 import ImageEditor from "./ImageEditor";
-
-// Image store: save base64 images in localStorage with short IDs
-function generateImageId() {
-  return Math.random().toString(36).substring(2, 10);
-}
-
-function saveImageToStore(base64) {
-  const id = generateImageId();
-  try {
-    const store = JSON.parse(localStorage.getItem("tweeter-images") || "{}");
-    store[id] = base64;
-    localStorage.setItem("tweeter-images", JSON.stringify(store));
-  } catch (e) {
-    // If localStorage is full, clear old images
-    try {
-      const store = JSON.parse(localStorage.getItem("tweeter-images") || "{}");
-      const keys = Object.keys(store);
-      if (keys.length > 20) {
-        keys.slice(0, 10).forEach(k => delete store[k]);
-      }
-      store[id] = base64;
-      localStorage.setItem("tweeter-images", JSON.stringify(store));
-    } catch (_) {}
-  }
-  return id;
-}
 
 function compressImage(file, maxWidth = 800, quality = 0.7) {
   return new Promise((resolve) => {
@@ -72,9 +47,9 @@ function CreateTweet({ postTweet, account, profiles }) {
   const maxLen = 280;
   const profilePic = getProfilePic(account, profiles);
 
-  // Image ref takes ~25 chars: local:xxxxxxxx
-  const imgRefLen = imageData ? 20 : 0; // \n[IMG]local:xxxxxxxx
-  const totalLen = content.length + imgRefLen;
+  const [uploading, setUploading] = useState(false);
+
+  const totalLen = content.length;
   const pct = (totalLen / maxLen) * 100;
   const remaining = maxLen - totalLen;
 
@@ -137,14 +112,17 @@ function CreateTweet({ postTweet, account, profiles }) {
     try {
       let finalContent = content;
       if (imageData) {
-        const imageId = saveImageToStore(imageData.base64);
-        finalContent = content + "\n[IMG]local:" + imageId;
+        setUploading(true);
+        const imageUrl = await uploadImage(imageData.base64, "tweets");
+        setUploading(false);
+        finalContent = content + "\n[IMG]" + imageUrl;
       }
       await postTweet(finalContent);
       setContent("");
       setImageData(null);
       setShowImageUpload(false);
     } catch (err) {
+      setUploading(false);
       setError("Tweet failed: " + (err.reason || err.message));
     }
     setPosting(false);
@@ -379,11 +357,11 @@ function CreateTweet({ postTweet, account, profiles }) {
           <button
             type="submit"
             className="btn btn-primary tweet-submit-btn"
-            disabled={posting || !content.trim() || remaining < 0}
+            disabled={posting || uploading || !content.trim() || remaining < 0}
           >
-            {posting ? (
+            {(posting || uploading) ? (
               <span className="btn-loading">
-                <span className="btn-spinner"></span> Posting...
+                <span className="btn-spinner"></span> {uploading ? 'Uploading...' : 'Posting...'}
               </span>
             ) : (
               <>

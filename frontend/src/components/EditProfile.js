@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { uploadImage } from "../helpers/cloudinary";
 import ImageEditor from "./ImageEditor";
 
 function EditProfile({ profile, account, onSave, onClose }) {
@@ -10,6 +11,7 @@ function EditProfile({ profile, account, onSave, onClose }) {
   const fileRef = useRef(null);
   const coverRef = useRef(null);
   const [editingImage, setEditingImage] = useState(null); // { src, type: 'profile'|'cover' }
+  const [saving, setSaving] = useState(false);
 
   const handleImageUpload = (e, type) => {
     const file = e.target.files[0];
@@ -35,15 +37,33 @@ function EditProfile({ profile, account, onSave, onClose }) {
     setEditingImage(null);
   };
 
-  const handleSave = () => {
-    onSave(account, {
-      name: name.trim() || "",
-      bio: bio.trim() || "",
-      location: location.trim() || "",
-      profilePic,
-      coverPic,
-    });
-    onClose();
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      let finalProfilePic = profilePic;
+      let finalCoverPic = coverPic;
+
+      // Upload profile pic to Cloudinary if it's a new base64 image
+      if (profilePic && profilePic.startsWith("data:")) {
+        finalProfilePic = await uploadImage(profilePic, "profiles");
+      }
+      // Upload cover pic to Cloudinary if it's a new base64 image
+      if (coverPic && coverPic.startsWith("data:")) {
+        finalCoverPic = await uploadImage(coverPic, "covers");
+      }
+
+      onSave(account, {
+        name: name.trim() || "",
+        bio: bio.trim() || "",
+        location: location.trim() || "",
+        profilePic: finalProfilePic,
+        coverPic: finalCoverPic,
+      });
+      onClose();
+    } catch (err) {
+      alert("Failed to upload image: " + err.message);
+    }
+    setSaving(false);
   };
 
   const shortAddr = account ? account.slice(0, 6) + "..." + account.slice(-4) : "";
@@ -59,7 +79,9 @@ function EditProfile({ profile, account, onSave, onClose }) {
             </svg>
           </button>
           <h3>Edit Profile</h3>
-          <button className="btn btn-primary btn-sm" onClick={handleSave}>Save</button>
+          <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
+            {saving ? "Uploading..." : "Save"}
+          </button>
         </div>
 
         <div
