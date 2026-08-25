@@ -1,4 +1,4 @@
-# 🐦 Tweeter — Decentralized Social Media on Ethereum
+# 🐦 Twitter — Decentralized Social Media on Ethereum
 
 A fully decentralized, Twitter/X-inspired social media platform built on the **Ethereum Holesky Testnet**.
 Every tweet, like, follow, and message is powered by smart contracts — no centralized backend, no censorship, and true user ownership.
